@@ -43,6 +43,7 @@ public class MemberApiController {
         return new Result(collect.size(), collect);
 
     }
+    // 리스트 대신 {}로 반환
     @Data
     @AllArgsConstructor
     static class Result<T> {
