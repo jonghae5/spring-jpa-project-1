@@ -5,6 +5,7 @@ import jpabook.jpashop.repository.OrderRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
@@ -32,6 +33,35 @@ public class OrderApiController {
     @GetMapping("/api/v2/orders")
     public List<OrderDto> ordersV2() {
         List<Order> orders = orderRepository.findAllByString(new OrderSearch());
+        List<OrderDto> collect = orders.stream()
+                .map(order -> new OrderDto(order))
+                .collect(Collectors.toList());
+
+        return collect;
+    }
+
+    @GetMapping("/api/v3/orders")
+    public List<OrderDto> ordersV3() {
+        List<Order> orders = orderRepository.findAllWithItem();
+
+        //JPA 입장에서는 DB에서 4개를 뿌려줬기 때문에 줄여서 줘야하는지 아닌지 구분을 못한다 >> distinct
+        // pk 기준으로 distinct 를 한 번 하고 App 단에서 실제 order의 distinct를 실행
+        for (Order order : orders) {
+            System.out.println("order ref= " + order + " id=" + order.getId());
+        }
+        List<OrderDto> collect = orders.stream()
+                .map(order -> new OrderDto(order))
+                .collect(Collectors.toList());
+
+        return collect;
+    }
+
+    // 개인적으로 이 방식이 좋음
+    @GetMapping("/api/v3.1/orders")
+    public List<OrderDto> ordersV3_pa음e(@RequestParam(value = "offset", defaultValue = "0") int offset,
+                                        @RequestParam(value = "limit", defaultValue = "100") int limit) {
+        List<Order> orders = orderRepository.findAllWithMemberDelivery(offset, limit);
+
         List<OrderDto> collect = orders.stream()
                 .map(order -> new OrderDto(order))
                 .collect(Collectors.toList());
