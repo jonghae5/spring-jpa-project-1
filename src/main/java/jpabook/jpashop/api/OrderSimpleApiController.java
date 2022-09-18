@@ -33,7 +33,7 @@ public class OrderSimpleApiController {
 
     @GetMapping("/api/v1/simple-orders")
     public List<Order> ordersV1() {
-        List<Order> all = orderRepository.findAllByString(new OrderSearch());
+        List<Order> all = orderRepository.findAll(new OrderSearch());
         // 객체를 JSON으로 변환하는데 어려움을 느낌 (양방향으로 인해 계속 객체를 왔다갔다거린다..)
 
         for (Order order : all) {
@@ -48,7 +48,7 @@ public class OrderSimpleApiController {
     public List<SimpleOrderDto> ordersV2() {
         //N+1 문제 ( 사실 1+N 문제? )
         // 1 -> N 회원 + N ds딜리버리 => 5개
-        List<Order> orders = orderRepository.findAllByString(new OrderSearch());
+        List<Order> orders = orderRepository.findAll(new OrderSearch());
         //결과 ORDER 2개
         List<SimpleOrderDto> result = orders.stream()
                 .map(o -> new SimpleOrderDto(o))

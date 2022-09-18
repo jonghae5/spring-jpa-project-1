@@ -1,13 +1,26 @@
+/* 10-1. querydsl version 정보 추가 */
+buildscript {
+	ext {
+		queryDslVersion = "5.0.0"
+	}
+}
+
 plugins {
 	id 'org.springframework.boot' version '2.7.3'
 	id 'io.spring.dependency-management' version '1.0.13.RELEASE'
 	id 'java'
+/* 10-2. querydsl plugin 추가 */
+	id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
+
+
+
 
 group = 'jpabook'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
+/* 10-3. querydsl */
 configurations {
 	compileOnly {
 		extendsFrom annotationProcessor
@@ -35,8 +48,32 @@ dependencies {
 	testImplementation("org.junit.vintage:junit-vintage-engine") {
 		exclude group: "org.hamcrest", module: "hamcrest-core"
 	}
+
+	/* 10-4. querydsl dependencies 추가 */
+	implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+	annotationProcessor "com.querydsl:querydsl-apt:${queryDslVersion}"
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+/* 10-5. querydsl에서 사용할 경로 지정*/
+def querydslDir = "$buildDir/generated/querydsl"
+/* 10-6. JPA사용 여부와 사용할 경로를 지정*/
+querydsl {
+	jpa = true
+	querydslSourcesDir = querydslDir
+}
+/* 10-7. build시 사용할 SourceSet 추가 */
+sourceSets {
+	main.java.srcDir querydslDir
+}
+/* 10-8. querydsl이 complieClasspath를 상속하도록 설정 */
+configurations {
+	querydsl.extendsFrom compileClasspath
+}
+/* 10-9. querydsl 컴파일시 사용할 옵션 설정 */
+compileQuerydsl {
+	options.annotationProcessorPath = configurations.querydsl
 }

@@ -40,7 +40,7 @@ public class MemberServiceTest {
 
         //then
 //        em.flush(); COMMIT하게 해주는 것 (실제는 RollBack)
-        assertThat(member).isEqualTo(memberRepository.findOne(saveId));
+        assertThat(member).isEqualTo(memberRepository.findById(saveId).get());
     }
 
     @Test
